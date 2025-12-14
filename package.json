@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Full-stack application with Node.js backend and React frontend",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd backend && npm run dev",
