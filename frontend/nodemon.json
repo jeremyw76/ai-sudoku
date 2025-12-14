@@ -1,0 +1,9 @@
+{
+  "watch": ["src", "vite.config.js", "index.html"],
+  "ext": "js,jsx,ts,tsx,json,css,html",
+  "ignore": ["node_modules", "dist"],
+  "exec": "npm run dev",
+  "delay": 500
+}
+
+
