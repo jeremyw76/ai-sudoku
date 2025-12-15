@@ -42,4 +42,4 @@ dump.rdb
 
 # Agent logs (optional - uncomment if you don't want to track logs)
 # AGENT_LOGS.md
-
+docs/agent-logs/
