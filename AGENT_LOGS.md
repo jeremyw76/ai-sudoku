@@ -239,3 +239,132 @@ This file stores agent interaction logs that are captured when creating pull req
 
 ## Tradeoffs
 (none yet)
+# Agent Session Log
+
+## Session Metadata
+- Date: 2026-01-22
+- Start Time: 11:55
+- Branch: feature-branch-scoped-logging
+- Agent Role: Claude Code (Sonnet 4.5)
+- Workspace: /mnt/c/Users/Jeremy/source/repos/try_cursor
+
+## User Prompts
+
+### Prompt 1 (11:55)
+```
+There are several documents for project rules and parameters. Read those and incorporate their instructions into your context.
+```
+
+### Prompt 2 (11:56)
+```
+We need a better session-logging strategy. Suggest a strategy for keeping logs of user/AI agent interactions that allows logging to be more closely aligned with the purpose of each commit. Specifically, if I were to temporarily abandon a branch in favour of a different feature, suggest a strategy that allows me to keep logs associated with the earlier branch, while creating a new log file for the later branch.
+```
+
+### Prompt 3 (12:10)
+```
+Implement the first strategy: Branch-scoped logging. If possible, filter out the logs unrelated to this change and preserve them for later. We will create a new branch for this change, which should include the logs of this conversation.
+```
+
+### Prompt 4 (12:15)
+```
+commit these changes
+```
+
+## Agent Responses
+
+### Response 1 (11:55)
+Acknowledged request to read project rules and parameters. Initiated search for documentation files in `.cursor/rules/` directory and project root.
+
+Found and read the following rule documents:
+1. `.cursor/rules/agent-logging.md` - Mandatory session logging requirements
+2. `.cursor/rules/pre-commit.md` - Pre-commit procedures for log consolidation
+3. `.cursor/rules/project-governance.md` - Reference to PROJECT.md governance
+4. `docs/PROJECT.md` - Project architecture, goals, and constraints
+
+Created this session log file as required by agent-logging.md mandatory initialization.
+
+### Response 2 (11:56)
+Analyzed current logging strategy and proposed branch-scoped logging approach:
+- Problem: Current logs mix work from different branches
+- Solution: Name logs with branch prefix: `{branch-name}-YYYY-MM-DD-HHMM.md`
+- Pre-commit consolidation only processes logs matching current branch
+- Abandoned branch logs preserved for later
+
+### Response 3 (12:00)
+Implementing branch-scoped logging strategy:
+1. Created new branch: feature-branch-scoped-logging
+2. Renamed current session log to include branch name
+3. Updating rule files to implement branch-aware logging
+
+## Files Read
+
+1. `.cursor/rules/agent-logging.md` - Read at 11:55
+2. `.cursor/rules/pre-commit.md` - Read at 11:55
+3. `.cursor/rules/project-governance.md` - Read at 11:55
+4. `docs/PROJECT.md` - Read at 11:55
+5. `docs/agent-logs/feature-branch-scoped-logging-2026-01-22-1155.md` - Read at 12:08 (to verify updates)
+
+## Files Modified/Created
+
+1. `docs/agent-logs/2026-01-22-1155-session.md` - Created at 11:55, renamed to `feature-branch-scoped-logging-2026-01-22-1155.md` at 12:00
+2. `docs/agent-logs/feature-branch-scoped-logging-2026-01-22-1155.md` - Updated metadata, responses, and activity log
+3. `.cursor/rules/agent-logging.md` - Updated at 12:05 to implement branch-scoped logging
+4. `.cursor/rules/pre-commit.md` - Updated at 12:07 to implement branch-aware log consolidation
+
+## Commands Run
+
+1. `**/*.md` - Glob search for markdown files
+2. `.cursor/rules/**/*` - Glob search for rule files
+3. `*.md` in project root - Glob search for root-level docs
+4. `ls -la /mnt/c/Users/Jeremy/source/repos/try_cursor/ | grep -E '(README|CONTRIBUTING|PROJECT|AGENT_LOGS)'` - Check for root documentation files
+5. `ls -la /mnt/c/Users/Jeremy/source/repos/try_cursor/docs/` - Check docs directory structure
+6. `date +"%Y-%m-%d-%H%M"` - Get timestamp for log filename
+7. `ls -la /mnt/c/Users/Jeremy/source/repos/try_cursor/docs/agent-logs/` - Check current log files (first check)
+8. `git rev-parse --abbrev-ref HEAD` - Check current branch (first check)
+9. `git checkout -b feature-branch-scoped-logging` - Create and checkout new branch
+10. `mv docs/agent-logs/2026-01-22-1155-session.md docs/agent-logs/feature-branch-scoped-logging-2026-01-22-1155.md` - Rename log file to include branch name
+11. `ls -la /mnt/c/Users/Jeremy/source/repos/try_cursor/docs/agent-logs/` - Verify log files after renaming
+12. `git status` - Check git status to verify old logs are preserved
+
+## Assumptions/Uncertainties/Tradeoffs
+
+### Implementation Decisions:
+1. **Branch name sanitization**: Replaced `/` with `-` and removed special characters to ensure valid filenames
+2. **Backward compatibility**: Existing logs without branch prefix (e.g., `2025-12-14-2201-session.md`) are preserved and will not match any branch during consolidation, allowing manual cleanup
+3. **Log consolidation timing**: Logs are only consolidated during commit operations, not during branch switches
+4. **Multiple sessions per branch**: Multiple log files can exist for the same branch (different timestamps), all will be consolidated together during commit
+
+### Benefits:
+- Branch-specific work is isolated in separate log files
+- Switching branches doesn't pollute logs with unrelated work
+- Abandoned branches retain their logs for future reference
+- Commits only include logs relevant to the work being committed
+
+## Key Project Rules Incorporated
+
+### From agent-logging.md:
+- Must automatically create log file at session start
+- Must log all prompts, responses, files, commands, and assumptions
+- Log format: `docs/agent-logs/YYYY-MM-DD-HHMM-session.md`
+- Logging must be incremental, not just at end
+- Task incomplete without log
+
+### From pre-commit.md:
+- Before commits: consolidate logs from `docs/agent-logs/` into `AGENT_LOGS.md`
+- Delete individual log files after consolidation
+- Stage `AGENT_LOGS.md` for commit
+
+### From project-governance.md:
+- Must read and follow `docs/PROJECT.md` constraints
+- Treat constraints as mandatory
+- Report conflicts between user requests and PROJECT.md
+
+### From PROJECT.md:
+- Node.js backend + React.js frontend
+- Sub-projects separated into own filespaces
+- Backend: Individual router files, services folders, `__tests__` folders with Jest
+- Frontend: Vite bundler, component-based structure, `__tests__` folders with Jest
+- Every router/service/JSX file needs corresponding test file
+- All files must adhere to linter
+- No PRs with failing tests
+- **Critical**: Test warnings may NOT be suppressed by redirecting console output
